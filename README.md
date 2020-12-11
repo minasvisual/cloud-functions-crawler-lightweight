@@ -36,6 +36,24 @@ Body crawlers:
 }
 ```
 
+## Response JSON
+```
+{ 
+    "example": {
+            "title": "Page selector text" 
+            "avatar": "http://<link of image>"
+            "desc": "<div>content of post</div>"
+            "menu": [
+               { "name": "Home" },
+               { "name": "Blog" },
+               { "name": "Contact" },
+               { "name": "..." },
+            ]
+        }
+    }
+}
+```
+
 Installation
 ```
 npm install

@@ -2,8 +2,9 @@ const chromium = require('chrome-aws-lambda');
 const CoreClass = require('./src/core.class')
 const LogClass = require('./src/logger.class')
 
-let page;
+var page;
 var buffer = {}
+var browser;
 const Logger = LogClass()
 
 async function getBrowserPage() {
@@ -18,12 +19,12 @@ async function getBrowserPage() {
     '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
   ]
 
-  const browser = await chromium.puppeteer.launch({
+  browser = await chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
     headless: chromium.headless,
-    ignoreHTTPSErrors: true,
+    ignoreHTTPSErrors: true
   });
 
   return browser.newPage();
@@ -41,8 +42,6 @@ exports.crawlersingle = async (req, res) => {
       if (!page) page = await getBrowserPage();
       
       await page.setDefaultNavigationTimeout(0); 
-      //expose functions to evaluate
-      //await page.exposeFunction('Logger', Logger.log); 
       // bind console log of evaluate
       page.on('console', msg => Logger.log('eval log', msg.text()));
 
@@ -58,9 +57,9 @@ exports.crawlersingle = async (req, res) => {
       Logger.debug('finished task '+taskName)
 
       await page.close();
+      await browser.close()
 
       res.send(buffer);
-
       buffer = {}
       return true;
   }catch(err){
