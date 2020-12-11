@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "dev": "node server.js",
+    "deploy": "gcloud functions deploy crawlersingle --trigger-http --runtime nodejs12 --memory 1024MB --timeout=540"
+  },
+  "dependencies": {
+    "axios": "^0.21.0",
+    "chrome-aws-lambda": "^5.5.0",
+    "iltorb": "^2.4.5",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "puppeteer-core": "^5.5.0"
+  },
+  "devDependencies": {
+    "puppeteer": "^5.5.0"
+  }
+}
