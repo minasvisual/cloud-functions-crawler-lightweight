@@ -6,26 +6,29 @@ const model = args[0];
 const response  = { send: console.info, status: () => response }
 
 const run = async () => {
-    await scraper.crawlersingle(
-        { body: { 
+    let data = await scraper.crawlersingle(
+        { 
+            body: { 
                 "name": "example",
                 "task": {
-                    "url": "https://ionicabizau.net",
+                    "url": "https://ionicabizau.net",  
                     "schema": {
-                        "title": ".header h1",
+                        "title": ".header h1", 
                         "avatar": {
-                            "selector": ".header img[src]",
-                            "attr": "src"
+                            "selector": ".header img[src]",  
+                            "attr": "src",
+                            "eq": 0,
+                            "trim": true 
                         },
                         "desc": { 
-                            "selector":".header h2",
-                            "attr": "innerHTML"
+                          "selector":".header h2",
+                          "attr": "innerHTML"
                         },
                         "menu":{
-                                "listItem": ".pages > li",
-                                "data": {
-                                    "name": "a"
-                                }
+                            "listItem": ".pages > li",
+                            "data": {
+                               "name": "a"
+                            }
                         }
                     }
                 }
@@ -33,8 +36,11 @@ const run = async () => {
         },
         response
     )
+    console.log(JSON.stringify(data))
 }
 
-run()
+(async function(){
+    await run()
 
-//process.exit()
+    process.exit(0)
+})()

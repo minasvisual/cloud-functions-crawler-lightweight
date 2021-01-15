@@ -7,7 +7,7 @@ module.exports = function(){
     validateModel: (model) => has(model, 'name') && has(model, 'task') && (typeof model.task == 'object'),
 
     getObjectSelector: async (page, selector) => {
-      return await page.$eval(selector.selector, (elem, selector) => {
+      return await page.$$eval(selector.selector, (elem, selector) => {
         let data = ''
         if (!elem)
           return data // if not exists
@@ -56,18 +56,23 @@ module.exports = function(){
               if( typeof subselector == 'string' ){
                 temp[subSelName] = item && item.querySelector(subselector).textContent
               }else if( subselector.selector && subselector.attr ){
-                temp[subSelName] = item && item.querySelector(subselector.selector)[subselector.attr]
+                let eq = subselector.eq || 0
+                temp[subSelName] = item && item.querySelectorAll(subselector.selector)[eq][subselector.attr]
               }else if( subselector.selector && subselector.how ){
-                let action =  item && item.querySelector(subselector.selector)
+                let eq = subselector.eq || 0
+                let action =  item && item.querySelectorAll(subselector.selector)[eq]
                 temp[subSelName] = ( action[subselector.how] ? action[subselector.how]() : action.innerHTML )
+              }else if( subselector.selector && subselector.eq && !subselector.attr ){
+                let eq = subselector.eq || 0
+                temp[subSelName] = item && item.querySelectorAll(subselector.selector)[eq].textContent
               }else{
                 temp[subSelName] = item.textContent
               }
               if( subselector.trim )
                 temp[subSelName] = temp[subSelName] && temp[subSelName].trim()
     
-              if( subselector.convert )
-                temp[subSelName] = subselector.convert(temp[subSelName])
+              // if( subselector.convert )
+              //   temp[subSelName] = subselector.convert(temp[subSelName])
             }
             return temp
           })
@@ -90,7 +95,7 @@ module.exports = function(){
 
         for( let url of task.url ){
             Logger.debug('page goto', url)
-            await page.goto(url, {waitUntil: 'networkidle0', timeout: 0});
+            await page.goto(url, {waitUntil: 'networkidle0', timeout: 60 * 1000});
 
             for( let selectorName in task.schema ){
               try{

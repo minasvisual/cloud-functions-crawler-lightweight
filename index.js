@@ -10,17 +10,19 @@ const Logger = LogClass()
 async function getBrowserPage() {
   // Launch headless Chrome. Turn off sandbox so Chrome can run under root.
   let args = [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-infobars',
-    '--window-position=0,0',
-    '--ignore-certifcate-errors',
-    '--ignore-certifcate-errors-spki-list',
-    '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
+    ...chromium.args,
+  //   '--no-sandbox',
+  //   '--disable-setuid-sandbox',
+     '--disable-infobars',
+  //   '--window-position=0,0',
+     '--ignore-certifcate-errors',
+     '--ignore-certifcate-errors-spki-list',
+     '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"'
   ]
-
+  console.log()
+  
   browser = await chromium.puppeteer.launch({
-    args: chromium.args,
+    args: args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
     headless: chromium.headless,
@@ -61,9 +63,18 @@ exports.crawlersingle = async (req, res) => {
 
       res.send(buffer);
       buffer = {}
+      browser = null
+      page = null
+
       return true;
   }catch(err){
     Logger.error(err)
+    
+    await page.close();
+    await browser.close()
+
+    browser = null
+    page = null
 
     return res.status(403).send(err.message)
   }
